@@ -2,18 +2,23 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Grindy Jump</title>
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071b0b;font-family:Arial,sans-serif}
 canvas{display:block;width:100%;height:100%;touch-action:none}
-#ui{position:fixed;top:12px;left:0;width:100%;display:flex;justify-content:space-between;padding:0 18px;color:white;font-size:20px;font-weight:bold;pointer-events:none;text-shadow:0 2px 4px #000}
-#start{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;text-align:center;background:linear-gradient(#071b0bdd,#123b18dd)}
-#start h1{font-size:48px;margin:0 0 10px}
-#start p{font-size:18px;margin:5px 20px 25px}
-button{border:0;border-radius:18px;padding:16px 35px;background:#39c45a;color:white;font-size:20px;font-weight:bold}
+#ui{position:fixed;top:max(12px,env(safe-area-inset-top));left:0;width:100%;display:flex;justify-content:space-between;padding:0 16px;color:#fff;font-size:18px;font-weight:800;pointer-events:none;text-shadow:0 2px 5px #000;z-index:3}
+#score{font-size:22px}
+#start{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff;text-align:center;background:linear-gradient(#071b0bd9,#123b18e8);z-index:5;padding:25px}
+#start h1{font-size:clamp(38px,12vw,58px);margin:0 0 10px}
+#start p{font-size:17px;line-height:1.4;margin:5px 20px 24px;max-width:420px}
+button{border:0;border-radius:18px;padding:16px 35px;background:#39c45a;color:#fff;font-size:20px;font-weight:800;box-shadow:0 5px 0 #19752d}
+button:active{transform:translateY(3px);box-shadow:0 2px 0 #19752d}
 .hidden{display:none!important}
+#controls{position:fixed;left:0;right:0;bottom:max(18px,env(safe-area-inset-bottom));display:flex;justify-content:space-between;padding:0 18px;z-index:4;pointer-events:none}
+.ctrl{pointer-events:auto;width:76px;height:76px;border-radius:50%;border:2px solid #ffffff66;background:#123b18cc;color:#fff;font-size:34px;font-weight:900;box-shadow:0 4px 12px #0006;touch-action:none;user-select:none}
+.hint{position:fixed;bottom:max(104px,calc(env(safe-area-inset-bottom) + 104px));left:0;right:0;text-align:center;color:#fff;font-size:13px;text-shadow:0 2px 4px #000;z-index:3;pointer-events:none}
 </style>
 </head>
 <body>
@@ -21,139 +26,339 @@ button{border:0;border-radius:18px;padding:16px 35px;background:#39c45a;color:wh
 <canvas id="game"></canvas>
 
 <div id="ui">
-  <span>🌿 GRINDY JUMP</span>
-  <span id="score">0</span>
+<span>🌿 GRINDY JUMP</span>
+<span id="score">0</span>
+</div>
+
+<div class="hint">← / → pour te déplacer</div>
+
+<div id="controls">
+<button class="ctrl" id="left">‹</button>
+<button class="ctrl" id="right">›</button>
 </div>
 
 <div id="start">
-  <h1>🌿 GRINDY JUMP</h1>
-  <p>Saute de feuille en feuille et va le plus loin possible !</p>
-  <button id="play">JOUER</button>
+<h1>🌿 GRINDY JUMP</h1>
+<p>Grinde de feuille en feuille, récupère les têtes 🌿 et monte le plus haut possible !</p>
+<button id="play">JOUER</button>
 </div>
 
 <script>
-const c=document.getElementById("game"),ctx=c.getContext("2d");
+const c=document.getElementById("game");
+const ctx=c.getContext("2d");
+
 let W,H,dpr;
+let player,platforms,collectibles,particles;
+let score=0,running=false,cam=0,last=0;
+let moveL=false,moveR=false,best=0;
+
 function resize(){
  dpr=devicePixelRatio||1;
- W=innerWidth;H=innerHeight;
- c.width=W*dpr;c.height=H*dpr;
+ W=innerWidth;
+ H=innerHeight;
+ c.width=W*dpr;
+ c.height=H*dpr;
  ctx.setTransform(dpr,0,0,dpr,0,0);
 }
-addEventListener("resize",resize);resize();
-
-let player,platforms,score,running=false,cam=0,last=0;
+addEventListener("resize",resize);
+resize();
 
 function reset(){
- player={x:90,y:H-170,w:38,h:48,vy:0,on:false};
+ player={
+  x:W*.45,y:H-170,w:38,h:48,
+  vy:0,vx:0,on:false
+ };
+
  platforms=[];
- let y=H-100,x=40;
- for(let i=0;i<40;i++){
-   platforms.push({x,y,w:120+Math.random()*70,h:18});
-   x+=120+Math.random()*100;
-   y-=65+Math.random()*35;
+ collectibles=[];
+ particles=[];
+ score=0;
+ cam=0;
+
+ let x=W*.35;
+ let y=H-95;
+
+ platforms.push({
+  x:x,y:y,
+  w:Math.min(180,W*.42),
+  h:18
+ });
+
+ for(let i=1;i<70;i++){
+  y-=78+Math.random()*48;
+
+  x=Math.max(
+   20,
+   Math.min(W-150,x+(Math.random()-.5)*190)
+  );
+
+  let w=115+Math.random()*65;
+
+  platforms.push({
+   x:x,y:y,w:w,h:18
+  });
+
+  if(i>1 && Math.random()<.78){
+   collectibles.push({
+    x:x+w*.5,
+    y:y-28,
+    r:10,
+    got:false,
+    bob:Math.random()*6.28
+   });
+  }
  }
- score=0;cam=0;
 }
 
 function jump(){
- if(!running)return;
- if(player.on){player.vy=-650;player.on=false}
+ if(running && player.on){
+  player.vy=-650;
+  player.on=false;
+ }
 }
 
-addEventListener("pointerdown",jump);
-addEventListener("keydown",e=>{if(e.code==="Space"||e.code==="ArrowUp")jump()});
+function bind(btn,setter){
+ btn.addEventListener("pointerdown",e=>{
+  e.preventDefault();
+  setter(true);
+  btn.setPointerCapture(e.pointerId);
+ });
+
+ btn.addEventListener("pointerup",e=>{
+  e.preventDefault();
+  setter(false);
+ });
+
+ btn.addEventListener("pointercancel",()=>setter(false));
+ btn.addEventListener("pointerleave",()=>setter(false));
+}
+
+bind(document.getElementById("left"),v=>moveL=v);
+bind(document.getElementById("right"),v=>moveR=v);
+
+addEventListener("keydown",e=>{
+ if(e.code==="ArrowLeft"||e.code==="KeyA")moveL=true;
+ if(e.code==="ArrowRight"||e.code==="KeyD")moveR=true;
+ if(e.code==="Space"||e.code==="ArrowUp")jump();
+});
+
+addEventListener("keyup",e=>{
+ if(e.code==="ArrowLeft"||e.code==="KeyA")moveL=false;
+ if(e.code==="ArrowRight"||e.code==="KeyD")moveR=false;
+});
 
 document.getElementById("play").onclick=()=>{
  document.getElementById("start").classList.add("hidden");
- reset();running=true;last=performance.now();requestAnimationFrame(loop);
+ reset();
+ running=true;
+ last=performance.now();
+ requestAnimationFrame(loop);
 };
+
+function addParticles(x,y,n=8){
+ for(let i=0;i<n;i++){
+  particles.push({
+   x:x,y:y,
+   vx:(Math.random()-.5)*180,
+   vy:-Math.random()*180,
+   life:.5+Math.random()*.4
+  });
+ }
+}
 
 function drawPlant(){
  ctx.save();
- ctx.translate(W/2,H+40-cam*.12);
+ ctx.translate(W/2,H+60-cam*.12);
+
  ctx.fillStyle="#123d18";
- ctx.fillRect(-180,-H-80,360,H+100);
- for(let i=0;i<11;i++){
-   let yy=-70-i*70;
-   ctx.fillStyle=i%2?"#176b2a":"#218c38";
-   ctx.beginPath();
-   ctx.ellipse(-80+(i%3)*80,yy,90,38,0,0,Math.PI*2);
-   ctx.fill();
+ ctx.fillRect(-150,-H-100,300,H+140);
+
+ for(let i=0;i<14;i++){
+  let yy=-80-i*72;
+  ctx.fillStyle=i%2?"#176b2a":"#218c38";
+  ctx.beginPath();
+  ctx.ellipse(
+   -95+(i%4)*65,
+   yy,
+   85,34,0,0,Math.PI*2
+  );
+  ctx.fill();
  }
+
  ctx.restore();
 }
 
 function drawPlayer(){
- let x=player.x,y=player.y-cam;
+ let x=player.x;
+ let y=player.y-cam;
+
+ ctx.save();
+ ctx.translate(x+19,y+24);
+
  ctx.fillStyle="#d8a66a";
- ctx.fillRect(x+10,y+17,20,25);
+ ctx.fillRect(-10,-7,20,25);
+
  ctx.fillStyle="#39a94b";
- ctx.beginPath();ctx.arc(x+19,y+12,19,0,Math.PI*2);ctx.fill();
+ ctx.beginPath();
+ ctx.arc(0,-12,19,0,Math.PI*2);
+ ctx.fill();
+
  ctx.fillStyle="#175c27";
  ctx.beginPath();
- ctx.ellipse(x+4,y+20,15,8,-.6,0,Math.PI*2);
- ctx.ellipse(x+34,y+20,15,8,.6,0,Math.PI*2);
+ ctx.ellipse(-15,-3,15,8,-.6,0,Math.PI*2);
+ ctx.ellipse(15,-3,15,8,.6,0,Math.PI*2);
  ctx.fill();
+
  ctx.fillStyle="#111";
- ctx.fillRect(x+11,y+8,4,5);ctx.fillRect(x+24,y+8,4,5);
+ ctx.fillRect(-9,-16,4,5);
+ ctx.fillRect(5,-16,4,5);
+
+ ctx.restore();
 }
 
 function draw(){
- ctx.clearRect(0,0,W,H);
  let g=ctx.createLinearGradient(0,0,0,H);
- g.addColorStop(0,"#87d9ff");g.addColorStop(1,"#d8f5cf");
- ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ g.addColorStop(0,"#72cfff");
+ g.addColorStop(1,"#d8f5cf");
+
+ ctx.fillStyle=g;
+ ctx.fillRect(0,0,W,H);
+
  drawPlant();
 
  for(const p of platforms){
-   let yy=p.y-cam;
-   if(yy>-30&&yy<H+30){
-     ctx.fillStyle="#43b64f";
-     ctx.beginPath();
-     ctx.ellipse(p.x+p.w/2,yy+5,p.w/2,12,0,0,Math.PI*2);
-     ctx.fill();
-     ctx.fillStyle="#277d32";
-     ctx.fillRect(p.x+10,yy+8,p.w-20,7);
-   }
+  let yy=p.y-cam;
+
+  if(yy>-30&&yy<H+30){
+   ctx.fillStyle="#43b64f";
+   ctx.beginPath();
+   ctx.ellipse(
+    p.x+p.w/2,
+    yy+5,
+    p.w/2,
+    12,
+    0,0,Math.PI*2
+   );
+   ctx.fill();
+
+   ctx.fillStyle="#277d32";
+   ctx.fillRect(p.x+10,yy+8,p.w-20,7);
+  }
  }
+
+ for(const q of collectibles){
+  if(!q.got){
+   let yy=q.y-cam+
+    Math.sin(q.bob+performance.now()/220)*4;
+
+   if(yy>-20&&yy<H+20){
+    ctx.fillStyle="#b8ff65";
+    ctx.beginPath();
+    ctx.arc(q.x,yy,q.r,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.font="bold 12px Arial";
+    ctx.textAlign="center";
+    ctx.fillText("🌿",q.x,yy+5);
+   }
+  }
+ }
+
  drawPlayer();
-}
-
-function loop(t){
- if(!running)return;
- let dt=Math.min((t-last)/1000,.03);last=t;
-
- player.vy+=1450*dt;
- let oldY=player.y;
- player.y+=player.vy*dt;
- player.on=false;
-
- for(const p of platforms){
-   if(player.x+player.w>p.x&&player.x<p.x+p.w&&
-      oldY+player.h<=p.y&&player.y+player.h>=p.y&&player.vy>=0){
-     player.y=p.y-player.h;
-     player.vy=0;
-     player.on=true;
-   }
- }
-
- cam=Math.max(cam, H-230-player.y);
- score=Math.max(score,Math.floor(cam/10));
- document.getElementById("score").textContent=score;
-
- if(player.y-cam>H+100){gameOver();return}
-
- draw();
- requestAnimationFrame(loop);
 }
 
 function gameOver(){
  running=false;
- document.getElementById("start").classList.remove("hidden");
+
+ best=Math.max(best,score);
+
  document.querySelector("#start h1").textContent="🌿 GAME OVER";
- document.querySelector("#start p").textContent="Score : "+score+" — Réessaie !";
+
+ document.querySelector("#start p").textContent=
+ "Score : "+score+
+ " • Record : "+best+
+ "\\nPrêt pour un nouveau grind ?";
+
  document.getElementById("play").textContent="REJOUER";
+ document.getElementById("start").classList.remove("hidden");
+}
+
+function loop(t){
+ if(!running)return;
+
+ let dt=Math.min((t-last)/1000,.03);
+ last=t;
+
+ let dir=(moveR?1:0)-(moveL?1:0);
+
+ player.vx+=(dir*900-player.vx*7)*dt;
+ player.x+=player.vx*dt;
+
+ if(player.x>W)player.x=-player.w;
+ if(player.x<-player.w)player.x=W;
+
+ player.vy+=1450*dt;
+
+ let oldY=player.y;
+ player.y+=player.vy*dt;
+
+ player.on=false;
+
+ for(const p of platforms){
+  if(
+   player.x+player.w>p.x &&
+   player.x<p.x+p.w &&
+   oldY+player.h<=p.y &&
+   player.y+player.h>=p.y &&
+   player.vy>=0
+  ){
+   player.y=p.y-player.h;
+   player.vy=-650;
+   player.on=true;
+   addParticles(player.x+19,p.y,6);
+  }
+ }
+
+ for(const q of collectibles){
+  if(
+   !q.got &&
+   player.x+player.w>q.x-q.r &&
+   player.x<q.x+q.r &&
+   player.y<q.y+q.r &&
+   player.y+player.h>q.y-q.r
+  ){
+   q.got=true;
+   score+=10;
+   addParticles(q.x,q.y,14);
+  }
+ }
+
+ cam=Math.max(cam,H-230-player.y);
+
+ score=Math.max(
+  score,
+  Math.floor(cam/10)
+ );
+
+ document.getElementById("score").textContent=score;
+
+ for(const p of particles){
+  p.x+=p.vx*dt;
+  p.vy+=500*dt;
+  p.y+=p.vy*dt;
+  p.life-=dt;
+ }
+
+ particles=particles.filter(p=>p.life>0);
+
+ if(player.y-cam>H+120){
+  gameOver();
+  return;
+ }
+
+ draw();
+
+ requestAnimationFrame(loop);
 }
 </script>
 </body>
