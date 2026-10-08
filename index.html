@@ -2,25 +2,19 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-
 <meta name="viewport"
-content="width=device-width,
-initial-scale=1,
-maximum-scale=1,
-user-scalable=no,
-viewport-fit=cover">
-
+      content="width=device-width, initial-scale=1, viewport-fit=cover,
+      user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-<title>Grindy Jump V7</title>
+<meta name="theme-color" content="#081b12">
+<title>Grindy Jump</title>
 
 <style>
 *{
   box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
   user-select:none;
-  -webkit-user-select:none;
-  -webkit-touch-callout:none;
 }
 
 html,body{
@@ -29,139 +23,140 @@ html,body{
   width:100%;
   height:100%;
   overflow:hidden;
-  background:#061509;
-  touch-action:none;
+  background:#081b12;
+  font-family:Arial,sans-serif;
 }
 
 body{
   position:fixed;
   inset:0;
-  font-family:Arial,sans-serif;
 }
 
 canvas{
-  position:fixed;
-  inset:0;
-  width:100vw;
-  height:100vh;
   display:block;
+  width:100%;
+  height:100%;
+  touch-action:none;
 }
 
 #ui{
   position:fixed;
   inset:0;
   pointer-events:none;
+  z-index:10;
 }
 
 #score{
   position:absolute;
-  top:calc(16px + env(safe-area-inset-top));
-  left:18px;
+  top:calc(env(safe-area-inset-top) + 12px);
+  left:15px;
   color:white;
-  font-size:22px;
+  font-size:20px;
   font-weight:bold;
   text-shadow:0 2px 5px #000;
 }
 
 #best{
   position:absolute;
-  top:calc(47px + env(safe-area-inset-top));
-  left:18px;
-  color:#b8ffbf;
-  font-size:14px;
-  text-shadow:0 2px 5px #000;
-}
-
-#fullscreen{
-  position:absolute;
-  top:calc(14px + env(safe-area-inset-top));
-  right:16px;
-  width:50px;
-  height:50px;
-  margin:0;
-  padding:0;
-  border:0;
-  border-radius:15px;
-  color:white;
-  background:rgba(0,0,0,.35);
-  font-size:25px;
-  pointer-events:auto;
-}
-
-#startScreen,
-#gameOver{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  text-align:center;
-  color:white;
-  background:rgba(0,15,5,.78);
-  pointer-events:auto;
-}
-
-#startScreen h1,
-#gameOver h1{
-  margin:0 0 12px;
-  font-size:44px;
-  text-shadow:0 4px 12px #000;
-}
-
-#startScreen p,
-#gameOver p{
-  margin:6px 20px;
-  font-size:17px;
+  top:calc(env(safe-area-inset-top) + 40px);
+  left:15px;
+  color:#d8ffe8;
+  font-size:13px;
+  text-shadow:0 2px 4px #000;
 }
 
 button{
   border:0;
-  border-radius:18px;
-  padding:15px 28px;
-  margin-top:18px;
-  font-size:19px;
-  font-weight:bold;
   color:white;
-  background:#21a849;
-  box-shadow:0 5px 0 #116528;
+  font-weight:bold;
+  background:rgba(0,0,0,.42);
+  border:1px solid rgba(255,255,255,.25);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
 }
 
-button:active{
-  transform:translateY(3px);
-  box-shadow:0 2px 0 #116528;
+#fullscreen{
+  pointer-events:auto;
+  position:absolute;
+  right:12px;
+  top:calc(env(safe-area-inset-top) + 12px);
+  width:48px;
+  height:48px;
+  border-radius:14px;
+  font-size:22px;
 }
 
 #controls{
   position:absolute;
   left:0;
   right:0;
-  bottom:calc(18px + env(safe-area-inset-bottom));
+  bottom:calc(env(safe-area-inset-bottom) + 18px);
   display:flex;
   justify-content:space-between;
-  padding:0 20px;
+  padding:0 22px;
   pointer-events:none;
 }
 
 .control{
-  width:92px;
-  height:72px;
-  border-radius:25px;
-  background:rgba(255,255,255,.16);
-  border:2px solid rgba(255,255,255,.3);
-  color:white;
+  pointer-events:auto;
+  width:88px;
+  height:68px;
+  border-radius:22px;
+  font-size:30px;
+  touch-action:none;
+}
+
+#startScreen,
+#gameOver{
+  position:fixed;
+  inset:0;
+  z-index:20;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:34px;
-  pointer-events:auto;
-  -webkit-backdrop-filter:blur(6px);
-  backdrop-filter:blur(6px);
+  text-align:center;
+  padding:25px;
+  background:
+    radial-gradient(circle at center,rgba(33,120,67,.45),rgba(0,0,0,.85));
 }
 
-.hiddenUI{
-  opacity:0;
-  pointer-events:none!important;
+.panel{
+  width:min(90%,400px);
+  padding:30px 22px;
+  border-radius:28px;
+  background:rgba(3,20,11,.82);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 15px 60px rgba(0,0,0,.5);
+  color:white;
+}
+
+.panel h1{
+  margin:0 0 8px;
+  font-size:42px;
+}
+
+.panel p{
+  color:#d8e8dc;
+  line-height:1.5;
+}
+
+.mainBtn{
+  margin-top:15px;
+  width:100%;
+  height:58px;
+  border-radius:18px;
+  background:#29b85f;
+  font-size:19px;
+}
+
+.hidden{
+  display:none!important;
+}
+
+#hint{
+  font-size:13px;
+  opacity:.75;
+  margin-top:15px;
 }
 </style>
 </head>
@@ -171,51 +166,55 @@ button:active{
 <canvas id="game"></canvas>
 
 <div id="ui">
+  <div id="score">Score : 0</div>
+  <div id="best">Record : 0</div>
 
-<div id="score">Score : 0</div>
-<div id="best">Record : 0</div>
+  <button id="fullscreen">⛶</button>
 
-<button id="fullscreen">⛶</button>
+  <div id="controls">
+    <button class="control" id="left">◀</button>
+    <button class="control" id="right">▶</button>
+  </div>
+</div>
 
 <div id="startScreen">
-<h1>🌿 Grindy Jump</h1>
-<p>Monte le plus haut possible !</p>
-<p>Récupère les têtes et réalise des grinds.</p>
-<button id="startBtn">JOUER</button>
+  <div class="panel">
+    <h1>GRINDY JUMP</h1>
+    <p>
+      Grimpe le plus haut possible.<br>
+      Attrape les têtes et réalise ton meilleur score.
+    </p>
+    <button class="mainBtn" id="startBtn">JOUER</button>
+    <div id="hint">
+      Maintiens ◀ ou ▶ pour diriger Grindy
+    </div>
+  </div>
 </div>
 
-<div id="gameOver" style="display:none">
-<h1>💥 Oups !</h1>
-<p id="finalScore">Score : 0</p>
-<button id="restartBtn">REJOUER</button>
-</div>
-
-<div id="controls">
-<div class="control" id="left">◀</div>
-<div class="control" id="right">▶</div>
-</div>
-
+<div id="gameOver" class="hidden">
+  <div class="panel">
+    <h1>GAME OVER</h1>
+    <p id="finalScore">Score : 0</p>
+    <button class="mainBtn" id="restartBtn">REJOUER</button>
+  </div>
 </div>
 
 <script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 
-const canvas=document.getElementById("game");
-const ctx=canvas.getContext("2d");
-
-let W=innerWidth;
-let H=innerHeight;
-let dpr=Math.min(devicePixelRatio||1,2);
+let W = innerWidth;
+let H = innerHeight;
+let dpr = Math.min(devicePixelRatio || 1,2);
 
 function resize(){
+  W = innerWidth;
+  H = innerHeight;
 
-  W=innerWidth;
-  H=innerHeight;
-
-  canvas.width=W*dpr;
-  canvas.height=H*dpr;
-
-  canvas.style.width=W+"px";
-  canvas.style.height=H+"px";
+  canvas.width = W*dpr;
+  canvas.height = H*dpr;
+  canvas.style.width = W+"px";
+  canvas.style.height = H+"px";
 
   ctx.setTransform(dpr,0,0,dpr,0,0);
 }
@@ -223,19 +222,14 @@ function resize(){
 addEventListener("resize",resize);
 resize();
 
-const scoreEl=document.getElementById("score");
-const bestEl=document.getElementById("best");
-
-const startScreen=document.getElementById("startScreen");
-const gameOver=document.getElementById("gameOver");
-const finalScore=document.getElementById("finalScore");
-
 let running=false;
+let gameOver=false;
 
 let score=0;
-let best=Number(localStorage.getItem("grindyBest")||0);
+let best=Number(localStorage.getItem("grindyBest") || 0);
 
-bestEl.textContent="Record : "+best;
+let cam=0;
+let worldHeight=10000;
 
 let keys={
   left:false,
@@ -247,1309 +241,912 @@ let platforms=[];
 let collectibles=[];
 let particles=[];
 
-let cam=0;
-
-let worldHeight=8000;
-
-let lastTime=0;
 let audioCtx=null;
 
-
-/* =========================
-   SON
-========================= */
-
-function sound(freq,duration=.08,type="sine"){
-
+function sound(freq=500,duration=.06,type="sine"){
   try{
-
     if(!audioCtx)
-      audioCtx=
-      new (window.AudioContext||window.webkitAudioContext)();
+      audioCtx=new (window.AudioContext||window.webkitAudioContext)();
 
     const osc=audioCtx.createOscillator();
     const gain=audioCtx.createGain();
 
     osc.type=type;
     osc.frequency.value=freq;
+    gain.gain.value=.045;
 
-    gain.gain.setValueAtTime(
-      .06,
-      audioCtx.currentTime
-    );
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start();
 
     gain.gain.exponentialRampToValueAtTime(
       .001,
       audioCtx.currentTime+duration
     );
 
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    osc.start();
-    osc.stop(
-      audioCtx.currentTime+duration
-    );
-
+    osc.stop(audioCtx.currentTime+duration);
   }catch(e){}
 }
-
-
-/* =========================
-   NOUVELLE PARTIE
-========================= */
 
 function resetGame(){
 
   score=0;
-
-  cam=0;
-
-  player={
-    x:W/2,
-    y:H-160,
-
-    vx:0,
-    vy:0,
-
-    w:34,
-    h:46,
-
-    rotation:0,
-    grind:0
-  };
+  gameOver=false;
 
   platforms=[];
   collectibles=[];
   particles=[];
 
-  const baseY=H-80;
+  const startY=H-125;
+
+  player={
+    x:W/2,
+    y:startY,
+    w:38,
+    h:48,
+    vx:0,
+    vy:0,
+    speed:0.65,
+    jump:-12,
+    grounded:false,
+    grindTimer:0
+  };
+
+  /*
+    IMPORTANT :
+    La caméra utilise :
+    écranY = mondeY - caméra
+
+    Donc pour placer Grindy à environ 45% de l'écran :
+    caméra = mondeY - position écran désirée
+  */
+  cam=player.y-H*.45;
 
   platforms.push({
-    x:W/2-100,
-    y:baseY,
-    w:200,
+    x:W/2-75,
+    y:H-75,
+    w:150,
     h:18
   });
 
-  let y=baseY-95;
-  let lastX=W/2-100;
+  let y=H-155;
+  let difficulty=0;
 
   while(y>-worldHeight){
 
-    const gap=75+Math.random()*25;
+    difficulty+=0.025;
 
-    let x=
-      lastX+
-      (Math.random()*180-90);
+    const width=Math.max(85,145-difficulty*30);
 
-    x=Math.max(
-      20,
-      Math.min(W-150,x)
+    const gap=Math.min(
+      115,
+      82+difficulty*12
     );
 
-    const platform={
+    const x=Math.random()*(W-width-30)+15;
+
+    platforms.push({
       x:x,
       y:y,
-      w:120+Math.random()*60,
-      h:16
-    };
+      w:width,
+      h:17
+    });
 
-    platforms.push(platform);
-
-    if(Math.random()<.75){
-
+    if(Math.random()<.72){
       collectibles.push({
-
-        x:x+platform.w/2,
-
-        y:y-40,
-
-        r:13,
-
-        taken:false,
-
-        spin:Math.random()*Math.PI*2
+        x:x+width/2,
+        y:y-30,
+        r:10,
+        collected:false,
+        spin:Math.random()*6
       });
     }
-
-    lastX=x;
 
     y-=gap;
   }
 
-  running=true;
-
-  startScreen.style.display="none";
-  gameOver.style.display="none";
-
-  lastTime=performance.now();
-
-  sound(500,.06);
+  updateUI();
 }
 
+function updateUI(){
+  document.getElementById("score").textContent=
+    "Score : "+score;
 
-/* =========================
-   PARTICULES
-========================= */
+  document.getElementById("best").textContent=
+    "Record : "+best;
+}
 
-function spawnParticles(x,y){
+function startGame(){
+  resetGame();
 
-  for(let i=0;i<10;i++){
+  document.getElementById("startScreen")
+    .classList.add("hidden");
+
+  document.getElementById("gameOver")
+    .classList.add("hidden");
+
+  running=true;
+
+  sound(600,.08,"square");
+
+  requestAnimationFrame(loop);
+}
+
+function endGame(){
+
+  if(gameOver)return;
+
+  gameOver=true;
+  running=false;
+
+  if(score>best){
+    best=score;
+    localStorage.setItem("grindyBest",best);
+  }
+
+  document.getElementById("finalScore").textContent=
+    "Score : "+score+" — Record : "+best;
+
+  document.getElementById("gameOver")
+    .classList.remove("hidden");
+
+  sound(140,.2,"sawtooth");
+}
+
+function spawnParticles(x,y,count=10){
+
+  for(let i=0;i<count;i++){
 
     particles.push({
-
       x:x,
-
       y:y,
-
       vx:(Math.random()-.5)*5,
-
-      vy:(Math.random()-.8)*5,
-
-      life:1,
-
-      size:3+Math.random()*4
+      vy:(Math.random()-.5)*5,
+      life:30+Math.random()*25,
+      size:2+Math.random()*4
     });
   }
 }
 
+function update(){
 
-function updateParticles(dt){
+  if(!running)return;
 
-  for(
-    let i=particles.length-1;
-    i>=0;
-    i--
-  ){
+  const difficulty=
+    Math.min(1,score/800);
 
-    const p=particles[i];
-
-    p.x+=p.vx;
-    p.y+=p.vy;
-
-    p.vy+=.12;
-
-    p.life-=dt*2;
-
-    if(p.life<=0)
-      particles.splice(i,1);
+  /*
+    Direction
+  */
+  if(keys.left){
+    player.vx-=player.speed;
   }
-}
 
-
-/* =========================
-   JEU
-========================= */
-
-function update(dt){
-
-  if(!running)
-    return;
-
-
-  /* CONTROLES */
-
-  if(keys.left)
-    player.vx-=.55;
-
-  if(keys.right)
-    player.vx+=.55;
+  if(keys.right){
+    player.vx+=player.speed;
+  }
 
   player.vx*=.88;
 
-  player.vx=
-    Math.max(
-      -7,
-      Math.min(7,player.vx)
-    );
+  player.vx=Math.max(
+    -6,
+    Math.min(6,player.vx)
+  );
 
   player.x+=player.vx;
 
-
-  /* WRAP */
-
+  /*
+    Wrap horizontal
+  */
   if(player.x<-player.w)
     player.x=W;
 
   if(player.x>W)
     player.x=-player.w;
 
+  /*
+    Gravity
+  */
+  player.vy+=.45;
+  player.vy=Math.min(player.vy,14);
 
-  /* GRAVITE */
-
-  player.vy+=.38;
+  const oldBottom=
+    player.y+player.h;
 
   player.y+=player.vy;
 
-  player.rotation=player.vx*.05;
+  player.grounded=false;
 
-
-  /* PLATEFORMES */
-
-  if(player.vy>0){
+  /*
+    Platforms
+  */
+  if(player.vy>=0){
 
     for(const p of platforms){
 
-      const bottom=
-        player.y+player.h/2;
-
-      const previousBottom=
-        bottom-player.vy;
+      const newBottom=
+        player.y+player.h;
 
       if(
-
-        previousBottom<=p.y &&
-
-        bottom>=p.y &&
-
-        player.x+player.w/2>p.x &&
-
-        player.x-player.w/2<
-        p.x+p.w
-
+        oldBottom<=p.y &&
+        newBottom>=p.y &&
+        player.x+player.w>p.x &&
+        player.x<p.x+p.w
       ){
 
-        player.y=
-          p.y-player.h/2;
+        player.y=p.y-player.h;
+        player.vy=player.jump;
+        player.grounded=true;
 
-        player.vy=-10.8;
+        player.grindTimer=10;
 
-        player.grind=.35;
+        score+=1;
 
         spawnParticles(
-          player.x,
-          p.y
+          player.x+player.w/2,
+          p.y,
+          7
         );
 
-        sound(
-          280,
-          .07,
-          "square"
-        );
+        sound(260,.045,"square");
 
         break;
       }
     }
   }
 
-
-  player.grind=
-    Math.max(
-      0,
-      player.grind-dt
-    );
-
-
-  /* COLLECTIBLES */
-
+  /*
+    Collectibles
+  */
   for(const c of collectibles){
 
-    if(c.taken)
-      continue;
+    if(c.collected)continue;
 
-    c.spin+=dt*5;
+    c.spin+=.08;
 
     const dx=
-      player.x-c.x;
+      player.x+player.w/2-c.x;
 
     const dy=
-      player.y-c.y;
+      player.y+player.h/2-c.y;
 
-    if(
-      Math.sqrt(dx*dx+dy*dy)<30
-    ){
+    if(Math.sqrt(dx*dx+dy*dy)<26){
 
-      c.taken=true;
+      c.collected=true;
 
       score+=10;
 
+      player.grindTimer=22;
+
       spawnParticles(
         c.x,
-        c.y
+        c.y,
+        18
       );
 
-      sound(
-        700,
-        .09,
-        "sine"
-      );
+      sound(850,.08,"triangle");
+      updateUI();
     }
   }
 
-
-  /* SCORE */
-
-  const heightScore=
-    Math.max(
-      0,
-      Math.floor(
-        (H-160-player.y)/10
-      )
-    );
-
-  score=
-    Math.max(
-      score,
-      heightScore
-    );
-
-  scoreEl.textContent=
-    "Score : "+score;
-
-
-  if(score>best){
-
-    best=score;
-
-    localStorage.setItem(
-      "grindyBest",
-      best
-    );
-
-    bestEl.textContent=
-      "Record : "+best;
-  }
-
-
-  /* =====================================
-     CAMÉRA V7 — CORRECTION DEFINITIVE
-     =====================================
-
-     IMPORTANT :
-
-     Le monde monte lorsque player.y DIMINUE.
-
-     L'écran utilise donc :
-
-        écranY = mondeY - cam
-
-     et non mondeY + cam.
-
-     La caméra augmente lorsque Grindy
-     monte afin de le maintenir visible.
-  */
-
-
-  const playerScreenY=
-    player.y-cam;
-
-
-  /* Zone idéale de Grindy */
-
-  const desiredScreenY=
-    H*0.45;
-
-
   /*
-     Calcul de la caméra nécessaire.
-
-     Exemple :
-
-     Grindy monte →
-     player.y diminue →
-     cam augmente →
-     Grindy reste visible.
+    Camera
   */
+  const desiredScreenY=H*.45;
 
   const targetCam=
     player.y-desiredScreenY;
 
+  cam+=(targetCam-cam)*.20;
 
   /*
-     Suivi rapide mais fluide.
+    Limites de caméra.
+    On autorise les valeurs négatives :
+    c'est indispensable pour suivre Grindy
+    lorsqu'il monte dans le monde.
   */
+  const minCam=-worldHeight;
+  const maxCam=H;
 
-  cam+=
-    (targetCam-cam)*0.22;
-
+  if(cam<minCam)cam=minCam;
+  if(cam>maxCam)cam=maxCam;
 
   /*
-     Sécurité caméra.
+    Score basé sur la hauteur
   */
-
-  if(cam<0)
-    cam=0;
-
-
-  const maxCam=
-    worldHeight;
-
-
-  if(cam>maxCam)
-    cam=maxCam;
-
-
-  updateParticles(dt);
-
-
-  /* GAME OVER */
-
-  if(
-    player.y-cam>
-    H+180
-  ){
-
-    running=false;
-
-    finalScore.textContent=
-      "Score : "+score+
-      " • Record : "+best;
-
-    gameOver.style.display="flex";
-
-    sound(
-      100,
-      .25,
-      "sawtooth"
+  const heightScore=
+    Math.max(
+      0,
+      Math.floor((H-150-player.y)/10)
     );
+
+  if(heightScore>score)
+    score=heightScore;
+
+  /*
+    Particules
+  */
+  for(let i=particles.length-1;i>=0;i--){
+
+    const p=particles[i];
+
+    p.x+=p.vx;
+    p.y+=p.vy;
+
+    p.vy+=.08;
+
+    p.life--;
+
+    if(p.life<=0)
+      particles.splice(i,1);
   }
+
+  /*
+    Game over :
+    Grindy est réellement sous l'écran.
+  */
+  const screenPlayerY=
+    player.y-cam;
+
+  if(screenPlayerY>H+180){
+    endGame();
+  }
+
+  updateUI();
 }
-
-
-/* =========================
-   DESSIN
-========================= */
 
 function drawBackground(){
 
   const gradient=
     ctx.createLinearGradient(
-      0,
-      0,
-      0,
-      H
+      0,0,0,H
     );
 
-  gradient.addColorStop(
-    0,
-    "#071b0b"
-  );
-
-  gradient.addColorStop(
-    .5,
-    "#0d4219"
-  );
-
-  gradient.addColorStop(
-    1,
-    "#031006"
-  );
+  gradient.addColorStop(0,"#07170f");
+  gradient.addColorStop(.55,"#103d24");
+  gradient.addColorStop(1,"#06130b");
 
   ctx.fillStyle=gradient;
+  ctx.fillRect(0,0,W,H);
 
-  ctx.fillRect(
-    0,
-    0,
-    W,
-    H
-  );
-
-
-  ctx.globalAlpha=.13;
-
-  for(let i=0;i<10;i++){
-
-    const x=
-      (i*137)%W;
-
-    const y=
-      (
-        i*280+
-        cam*.08
-      )%H;
-
-    ctx.beginPath();
-
-    ctx.arc(
-      x,
-      y,
-      80,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fillStyle="#5aff70";
-
-    ctx.fill();
-  }
-
-  ctx.globalAlpha=1;
-}
-
-
-/* =========================
-   PLANTE GEANTE
-========================= */
-
-function drawGiantPlant(){
-
-  const baseX=W*.5;
-
-  const baseY=
-    worldHeight+500-cam;
-
+  /*
+    Grande plante décorative
+  */
   ctx.save();
 
-  ctx.strokeStyle="#184d20";
+  const plantX=W*.5;
 
-  ctx.lineWidth=35;
-
+  ctx.strokeStyle="rgba(34,140,70,.28)";
+  ctx.lineWidth=45;
   ctx.beginPath();
 
   ctx.moveTo(
-    baseX,
-    baseY
+    plantX,
+    H+200
   );
 
   ctx.bezierCurveTo(
-
-    baseX-30,
-    baseY-700,
-
-    baseX+50,
-    baseY-1600,
-
-    baseX,
-    baseY-3000
-
+    plantX-80,
+    H*.6,
+    plantX+100,
+    H*.3,
+    plantX,
+    -200
   );
 
   ctx.stroke();
 
+  ctx.lineWidth=4;
 
-  for(let i=0;i<16;i++){
+  for(let i=0;i<9;i++){
 
     const y=
-      baseY-i*190;
+      ((i*170+cam*.15)%(
+        H+250
+      ))-100;
 
-    const side=
-      i%2===0?-1:1;
-
-    ctx.fillStyle="#246b2c";
+    ctx.strokeStyle=
+      "rgba(70,190,95,.16)";
 
     ctx.beginPath();
 
-    ctx.ellipse(
-
-      baseX+side*100,
-
-      y,
-
-      140,
-
-      45,
-
-      side*.4,
-
-      0,
-      Math.PI*2
-
+    ctx.moveTo(
+      plantX,
+      y+80
     );
 
-    ctx.fill();
+    ctx.quadraticCurveTo(
+      plantX-100,
+      y,
+      plantX-180,
+      y+35
+    );
+
+    ctx.stroke();
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      plantX,
+      y+80
+    );
+
+    ctx.quadraticCurveTo(
+      plantX+100,
+      y,
+      plantX+180,
+      y+35
+    );
+
+    ctx.stroke();
   }
 
   ctx.restore();
 }
 
+function drawPlatform(p){
 
-/* =========================
-   PLATEFORMES
-========================= */
+  const sy=p.y-cam;
 
-function drawPlatforms(){
-
-  for(const p of platforms){
-
-    /*
-      CORRECTION :
-
-      écranY = mondeY - caméra
-    */
-
-    const sy=
-      p.y-cam;
-
-
-    if(
-      sy<-50||
-      sy>H+50
-    )
-      continue;
-
-
-    ctx.fillStyle="#7a4d2c";
-
-    ctx.fillRect(
-      p.x,
-      sy,
-      p.w,
-      p.h
-    );
-
-
-    ctx.fillStyle="#38a94a";
-
-    ctx.fillRect(
-      p.x,
-      sy,
-      p.w,
-      7
-    );
-
-
-    ctx.fillStyle="#70d66e";
-
-    ctx.fillRect(
-      p.x+10,
-      sy-2,
-      p.w*.3,
-      3
-    );
-  }
-}
-
-
-/* =========================
-   COLLECTIBLES
-========================= */
-
-function drawCollectibles(){
-
-  for(const c of collectibles){
-
-    if(c.taken)
-      continue;
-
-
-    const sy=
-      c.y-cam;
-
-
-    if(
-      sy<-40||
-      sy>H+40
-    )
-      continue;
-
-
-    ctx.save();
-
-    ctx.translate(
-      c.x,
-      sy
-    );
-
-    ctx.rotate(c.spin);
-
-
-    ctx.fillStyle="#a8ef8d";
-
-    ctx.beginPath();
-
-    ctx.arc(
-      0,
-      0,
-      c.r,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fill();
-
-
-    ctx.fillStyle="#173719";
-
-    ctx.beginPath();
-
-    ctx.arc(
-      -4,
-      -2,
-      2,
-      0,
-      Math.PI*2
-    );
-
-    ctx.arc(
-      4,
-      -2,
-      2,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fill();
-
-
-    ctx.strokeStyle="#173719";
-
-    ctx.lineWidth=2;
-
-    ctx.beginPath();
-
-    ctx.arc(
-      0,
-      3,
-      5,
-      0,
-      Math.PI
-    );
-
-    ctx.stroke();
-
-    ctx.restore();
-  }
-}
-
-
-/* =========================
-   GRINDY
-========================= */
-
-function drawPlayer(){
-
-  /*
-    LA LIGNE ESSENTIELLE :
-
-    Grindy = position monde
-    moins caméra
-  */
-
-  const x=player.x;
-
-  const y=
-    player.y-cam;
-
+  if(sy<-50 || sy>H+50)
+    return;
 
   ctx.save();
 
-  ctx.translate(
-    x,
-    y
-  );
-
-  ctx.rotate(
-    player.rotation
-  );
-
-
-  /* OMBRE */
-
-  ctx.fillStyle=
-    "rgba(0,0,0,.25)";
+  ctx.fillStyle="#45a85c";
 
   ctx.beginPath();
 
-  ctx.ellipse(
+  ctx.roundRect(
+    p.x,
+    sy,
+    p.w,
+    p.h,
+    8
+  );
+
+  ctx.fill();
+
+  ctx.fillStyle="#8bdc7e";
+
+  ctx.fillRect(
+    p.x,
+    sy,
+    p.w,
+    4
+  );
+
+  ctx.restore();
+}
+
+function drawCollectible(c){
+
+  if(c.collected)return;
+
+  const sy=c.y-cam;
+
+  if(sy<-40 || sy>H+40)
+    return;
+
+  ctx.save();
+
+  ctx.translate(c.x,sy);
+
+  const s=
+    .75+
+    Math.abs(Math.sin(c.spin))*.25;
+
+  ctx.scale(s,1);
+
+  /*
+    Tête stylisée
+  */
+  ctx.fillStyle="#d8c7a0";
+
+  ctx.beginPath();
+
+  ctx.arc(
     0,
-    25,
-    22,
-    7,
     0,
+    c.r,
     0,
     Math.PI*2
   );
 
   ctx.fill();
 
+  ctx.fillStyle="#19130f";
 
-  /* JAMBES */
+  ctx.beginPath();
+  ctx.arc(-3,-2,1.5,0,Math.PI*2);
+  ctx.arc(3,-2,1.5,0,Math.PI*2);
+  ctx.fill();
 
-  ctx.strokeStyle="#222";
-
-  ctx.lineWidth=7;
-
-  ctx.lineCap="round";
+  ctx.strokeStyle="#19130f";
+  ctx.lineWidth=1.5;
 
   ctx.beginPath();
 
-  ctx.moveTo(
-    -7,
-    15
-  );
-
-  ctx.lineTo(
-    -12,
-    27
-  );
-
-  ctx.moveTo(
-    7,
-    15
-  );
-
-  ctx.lineTo(
-    13,
-    27
+  ctx.arc(
+    0,
+    2,
+    4,
+    0,
+    Math.PI
   );
 
   ctx.stroke();
 
+  ctx.restore();
+}
 
-  /* CORPS */
+function drawPlayer(){
 
-  ctx.fillStyle="#222";
+  const sx=player.x;
+  const sy=player.y-cam;
 
-  ctx.fillRect(
-    -14,
-    -5,
-    28,
-    27
-  );
-
-
-  /* T-SHIRT */
-
-  ctx.fillStyle="#45c95a";
-
-  ctx.fillRect(
-    -13,
-    -5,
-    26,
-    18
-  );
-
-
-  /* TETE */
-
-  ctx.fillStyle="#d69a70";
+  /*
+    Ombre
+  */
+  ctx.fillStyle="rgba(0,0,0,.25)";
 
   ctx.beginPath();
 
-  ctx.arc(
+  ctx.ellipse(
+    sx+player.w/2,
+    sy+player.h+5,
+    23,
+    6,
     0,
-    -18,
-    14,
     0,
     Math.PI*2
   );
 
   ctx.fill();
 
+  /*
+    Corps
+  */
+  ctx.fillStyle="#d7e1d8";
 
-  /* CASQUETTE */
+  ctx.beginPath();
 
-  ctx.fillStyle="#111";
+  ctx.roundRect(
+    sx+7,
+    sy+12,
+    24,
+    27,
+    9
+  );
+
+  ctx.fill();
+
+  /*
+    Tête
+  */
+  ctx.fillStyle="#e5d1ad";
 
   ctx.beginPath();
 
   ctx.arc(
+    sx+19,
+    sy+11,
+    11,
     0,
-    -23,
-    14,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+  /*
+    Bonnet / cheveux
+  */
+  ctx.fillStyle="#171b18";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    sx+19,
+    sy+7,
+    11,
     Math.PI,
     Math.PI*2
   );
 
   ctx.fill();
 
-  ctx.fillRect(
-    -14,
-    -23,
-    24,
-    5
-  );
-
-
-  /* YEUX */
-
+  /*
+    Yeux
+  */
   ctx.fillStyle="#111";
 
   ctx.beginPath();
 
   ctx.arc(
-    -5,
-    -18,
-    2,
+    sx+15,
+    sy+11,
+    1.5,
     0,
     Math.PI*2
   );
 
   ctx.arc(
-    5,
-    -18,
-    2,
+    sx+23,
+    sy+11,
+    1.5,
     0,
     Math.PI*2
   );
 
   ctx.fill();
 
+  /*
+    Bras
+  */
+  ctx.strokeStyle="#e5d1ad";
+  ctx.lineWidth=5;
+  ctx.lineCap="round";
 
-  /* BRAS */
+  ctx.beginPath();
 
-  ctx.strokeStyle="#d69a70";
+  ctx.moveTo(
+    sx+8,
+    sy+20
+  );
 
+  ctx.lineTo(
+    sx-2,
+    sy+29
+  );
+
+  ctx.moveTo(
+    sx+30,
+    sy+20
+  );
+
+  ctx.lineTo(
+    sx+40,
+    sy+29
+  );
+
+  ctx.stroke();
+
+  /*
+    Jambes
+  */
+  ctx.strokeStyle="#d7e1d8";
   ctx.lineWidth=6;
 
   ctx.beginPath();
 
   ctx.moveTo(
-    -12,
-    0
+    sx+13,
+    sy+38
   );
 
   ctx.lineTo(
-    -20,
-    8
+    sx+8,
+    sy+49
   );
 
   ctx.moveTo(
-    12,
-    0
+    sx+25,
+    sy+38
   );
 
   ctx.lineTo(
-    20,
-    8
+    sx+30,
+    sy+49
   );
 
   ctx.stroke();
 
+  /*
+    Effet grind
+  */
+  if(player.grindTimer>0){
 
-  ctx.restore();
+    player.grindTimer--;
 
+    ctx.strokeStyle=
+      "rgba(255,220,80,.9)";
 
-  /* EFFET GRIND */
+    ctx.lineWidth=2;
 
-  if(player.grind>0){
+    for(let i=0;i<3;i++){
 
-    ctx.save();
+      ctx.beginPath();
 
-    ctx.globalAlpha=.85;
+      ctx.moveTo(
+        sx-5-i*4,
+        sy+42+i*3
+      );
 
-    ctx.strokeStyle="#b6ff5c";
+      ctx.lineTo(
+        sx-15-i*7,
+        sy+46+i*3
+      );
 
-    ctx.lineWidth=4;
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-      x-28,
-      y+28
-    );
-
-    ctx.lineTo(
-      x+28,
-      y+28
-    );
-
-    ctx.stroke();
-
-    ctx.restore();
+      ctx.stroke();
+    }
   }
 }
-
-
-/* =========================
-   PARTICULES
-========================= */
 
 function drawParticles(){
 
   for(const p of particles){
 
+    const sy=p.y-cam;
+
     ctx.globalAlpha=
-      Math.max(
-        0,
-        p.life
-      );
+      Math.max(0,p.life/50);
 
-    ctx.fillStyle="#9aff65";
+    ctx.fillStyle="#b8f28a";
 
-    ctx.beginPath();
-
-    ctx.arc(
+    ctx.fillRect(
       p.x,
-      p.y-cam,
+      sy,
       p.size,
-      0,
-      Math.PI*2
+      p.size
     );
-
-    ctx.fill();
   }
 
   ctx.globalAlpha=1;
 }
 
-
-/* =========================
-   RENDU
-========================= */
-
 function draw(){
 
   drawBackground();
 
-  drawGiantPlant();
+  for(const p of platforms)
+    drawPlatform(p);
 
-  drawPlatforms();
-
-  drawCollectibles();
+  for(const c of collectibles)
+    drawCollectible(c);
 
   drawParticles();
 
   drawPlayer();
 }
 
+function loop(){
 
-/* =========================
-   BOUCLE
-========================= */
+  if(!running)return;
 
-function loop(time){
-
-  const dt=
-    Math.min(
-      .033,
-      (time-lastTime)/1000||0
-    );
-
-  lastTime=time;
-
-  update(dt);
-
+  update();
   draw();
 
   requestAnimationFrame(loop);
 }
 
-requestAnimationFrame(loop);
+/*
+  Contrôles clavier
+*/
+addEventListener("keydown",e=>{
 
+  if(
+    e.key==="ArrowLeft" ||
+    e.key.toLowerCase()==="a"
+  ){
+    keys.left=true;
+  }
 
-/* =========================
-   CONTROLES
-========================= */
+  if(
+    e.key==="ArrowRight" ||
+    e.key.toLowerCase()==="d"
+  ){
+    keys.right=true;
+  }
+});
 
-function setControl(
-  element,
-  direction
-){
+addEventListener("keyup",e=>{
+
+  if(
+    e.key==="ArrowLeft" ||
+    e.key.toLowerCase()==="a"
+  ){
+    keys.left=false;
+  }
+
+  if(
+    e.key==="ArrowRight" ||
+    e.key.toLowerCase()==="d"
+  ){
+    keys.right=false;
+  }
+});
+
+/*
+  Contrôles tactiles
+*/
+function touchControl(button,key){
 
   const down=e=>{
-
     e.preventDefault();
-
-    keys[direction]=true;
+    keys[key]=true;
   };
-
 
   const up=e=>{
-
     e.preventDefault();
-
-    keys[direction]=false;
+    keys[key]=false;
   };
 
+  button.addEventListener("touchstart",down,{
+    passive:false
+  });
 
-  element.addEventListener(
-    "touchstart",
-    down,
-    {passive:false}
-  );
+  button.addEventListener("touchend",up,{
+    passive:false
+  });
 
-  element.addEventListener(
-    "touchend",
-    up,
-    {passive:false}
-  );
+  button.addEventListener("touchcancel",up,{
+    passive:false
+  });
 
-  element.addEventListener(
-    "touchcancel",
-    up,
-    {passive:false}
-  );
-
-  element.addEventListener(
-    "mousedown",
-    down
-  );
-
-  element.addEventListener(
-    "mouseup",
-    up
-  );
-
-  element.addEventListener(
-    "mouseleave",
-    up
-  );
+  button.addEventListener("mousedown",down);
+  button.addEventListener("mouseup",up);
+  button.addEventListener("mouseleave",up);
 }
 
-
-setControl(
+touchControl(
   document.getElementById("left"),
   "left"
 );
 
-setControl(
+touchControl(
   document.getElementById("right"),
   "right"
 );
 
+/*
+  Boutons
+*/
+document.getElementById("startBtn")
+  .addEventListener("click",startGame);
 
-/* CLAVIER */
+document.getElementById("restartBtn")
+  .addEventListener("click",startGame);
 
-addEventListener(
-  "keydown",
-  e=>{
-
-    if(
-      e.key==="ArrowLeft"||
-      e.key.toLowerCase()==="a"
-    )
-      keys.left=true;
-
-
-    if(
-      e.key==="ArrowRight"||
-      e.key.toLowerCase()==="d"
-    )
-      keys.right=true;
-  }
-);
-
-
-addEventListener(
-  "keyup",
-  e=>{
-
-    if(
-      e.key==="ArrowLeft"||
-      e.key.toLowerCase()==="a"
-    )
-      keys.left=false;
-
-
-    if(
-      e.key==="ArrowRight"||
-      e.key.toLowerCase()==="d"
-    )
-      keys.right=false;
-  }
-);
-
-
-/* =========================
-   BOUTONS
-========================= */
-
-document
-.getElementById("startBtn")
-.addEventListener(
-  "click",
-  resetGame
-);
-
-
-document
-.getElementById("restartBtn")
-.addEventListener(
-  "click",
-  resetGame
-);
-
-
-/* =========================
-   PLEIN ÉCRAN
-========================= */
-
-const fullscreenBtn=
-  document.getElementById(
-    "fullscreen"
-  );
-
-
-async function toggleFullscreen(){
+/*
+  Plein écran
+*/
+document.getElementById("fullscreen")
+.addEventListener("click",async()=>{
 
   try{
 
-    if(
-      document.fullscreenElement
-    ){
+    if(document.fullscreenElement){
 
       await document.exitFullscreen();
 
-      fullscreenBtn.textContent="⛶";
-
-      return;
-    }
-
-
-    if(
-      document.documentElement
-      .requestFullscreen
+    }else if(
+      document.documentElement.requestFullscreen
     ){
 
-      await document.documentElement
-        .requestFullscreen();
+      await document.documentElement.requestFullscreen();
 
-      fullscreenBtn.textContent="✕";
+    }else if(
+      document.documentElement.webkitRequestFullscreen
+    ){
 
-      return;
+      document.documentElement.webkitRequestFullscreen();
     }
 
+  }catch(e){}
+});
 
-    /*
-      Sur iPhone Safari,
-      requestFullscreen n'est pas toujours
-      disponible.
-
-      Le mode "Ajouter à l'écran d'accueil"
-      ouvre alors le jeu en plein écran
-      si le site est configuré comme web-app.
-    */
-
-    document.body.style.height="100dvh";
-
-    canvas.style.height="100dvh";
-
-    fullscreenBtn.textContent="✓";
-
-  }catch(e){
-
-    document.body.style.height="100dvh";
-
-    canvas.style.height="100dvh";
-
-    fullscreenBtn.textContent="✓";
-  }
-}
-
-
-fullscreenBtn.addEventListener(
-  "click",
-  toggleFullscreen
-);
-
-
-/* =========================
-   EMPÊCHER LE SCROLL IPHONE
-========================= */
-
+/*
+  Empêche le défilement iPhone
+*/
 document.addEventListener(
   "touchmove",
   e=>e.preventDefault(),
   {passive:false}
 );
 
-
-/* =========================
-   ORIENTATION
-========================= */
-
-addEventListener(
-  "orientationchange",
-  ()=>{
-    setTimeout(
-      resize,
-      300
-    );
-  }
-);
-
+resetGame();
+draw();
 </script>
 
 </body>
